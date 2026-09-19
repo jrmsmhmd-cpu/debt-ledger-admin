@@ -111,6 +111,7 @@ export default function Dashboard() {
           <NavCard href="/devices" title="الأجهزة" desc="إدارة الأجهزة المسجلة" icon="📱" />
           <NavCard href="/payments" title="المدفوعات" desc="الموافقة والرفض" icon="💰" />
           <NavCard href="/licenses" title="التراخيص" desc="إدارة الأكواد" icon="🔑" />
+          <NavCard href="/payment-methods" title="طرق الدفع" desc="إدارة طرق الدفع" icon="💳" />
         </div>
       </div>
     </div>
