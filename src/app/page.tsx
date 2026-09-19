@@ -1,17 +1,32 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { supabase, type RemoteSettings } from "@/lib/supabase";
 
 export default function Home() {
+  const router = useRouter();
   const [settings, setSettings] = useState<RemoteSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [userEmail, setUserEmail] = useState<string>("");
 
   useEffect(() => {
-    fetchSettings();
-  }, []);
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) {
+        router.replace("/login");
+      } else {
+        setUserEmail(data.user.email ?? "");
+        fetchSettings();
+      }
+    });
+  }, [router]);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.replace("/login");
+  }
 
   async function fetchSettings() {
     setLoading(true);
@@ -74,10 +89,23 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-900 text-white p-6" dir="rtl">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2 text-amber-400">
-          لوحة تحكم دفتر الديون
-        </h1>
-        <p className="text-slate-400 mb-8">إدارة كاملة للإعدادات من مكان واحد</p>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-bold mb-2 text-amber-400">
+              لوحة تحكم دفتر الديون
+            </h1>
+            <p className="text-slate-400">إدارة كاملة للإعدادات من مكان واحد</p>
+          </div>
+          <div className="text-left">
+            <p className="text-xs text-slate-400 mb-1">{userEmail}</p>
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-4 py-2 rounded-lg"
+            >
+              🚪 خروج
+            </button>
+          </div>
+        </div>
 
         {message && (
           <div className={`mb-6 p-4 rounded-lg ${
